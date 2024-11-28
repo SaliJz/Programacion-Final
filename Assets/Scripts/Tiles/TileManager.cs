@@ -4,11 +4,11 @@ using UnityEngine;
 public class TileManager : MonoBehaviour
 {
     private List<GameObject> activeTiles;
-    public GameObject[] tilePrefabs;
+    [SerializeField] private GameObject[] tilePrefabs;
 
-    public float tileLength = 30;
-    public int numberOfTiles = 3;
-    public int totalNumOfTiles = 8;
+    [SerializeField] private float tileLength = 30;
+    [SerializeField] private int numberOfTiles = 3;
+    [SerializeField] private int totalNumOfTiles = 8;
 
     public float zSpawn = 0;
 
@@ -21,10 +21,14 @@ public class TileManager : MonoBehaviour
         activeTiles = new List<GameObject>();
         for (int i = 0; i < numberOfTiles; i++)
         {
-            if(i==0)
+            if (i == 0)
+            {
                 SpawnTile();
+            }
             else
+            {
                 SpawnTile(Random.Range(0, totalNumOfTiles));
+            }
         }
 
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
@@ -35,8 +39,10 @@ public class TileManager : MonoBehaviour
         if(playerTransform.position.z - 30 >= zSpawn - (numberOfTiles * tileLength))
         {
             int index = Random.Range(0, totalNumOfTiles);
-            while(index == previousIndex)
+            while (index == previousIndex)
+            {
                 index = Random.Range(0, totalNumOfTiles);
+            }
 
             DeleteTile();
             SpawnTile(index);
@@ -48,10 +54,14 @@ public class TileManager : MonoBehaviour
     {
         GameObject tile = tilePrefabs[index];
         if (tile.activeInHierarchy)
+        {
             tile = tilePrefabs[index + 8];
+        }
 
-        if(tile.activeInHierarchy)
+        if (tile.activeInHierarchy)
+        {
             tile = tilePrefabs[index + 16];
+        }
 
         tile.transform.position = Vector3.forward * zSpawn;
         tile.transform.rotation = Quaternion.identity;
