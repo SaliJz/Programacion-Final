@@ -4,19 +4,33 @@ using UnityEngine;
 
 public class LevelEvents : MonoBehaviour
 {
-    public GameObject gamePausedPanel;
-    public Button pauseButton; 
+    [SerializeField] private GameObject gamePausedPanel;
+    [SerializeField] private Button pauseButton;
+    [SerializeField] private Button quitButton;
+
+    private void Awake()
+    {
+        gamePausedPanel.SetActive(false);
+        pauseButton.onClick.AddListener(ReplayGame);
+        quitButton.onClick.AddListener(QuitGame);
+    }
 
     private void Update()
     {
         if (!PlayerManager.isGameStarted)
+        {
             return;
+        }
 
         if (PlayerManager.gameOver)
+        {
             pauseButton.interactable = false;
+        }
 
         if (PlayerManager.gameOver)
+        {
             return;
+        }
 
 
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -62,6 +76,4 @@ public class LevelEvents : MonoBehaviour
     {
         Application.Quit();
     }
-
-
 }

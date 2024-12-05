@@ -80,12 +80,12 @@ public class PlayerController : MonoBehaviour
         {
             if (isGrounded)
             {
-                if (SwipeManager.swipeUp)
+                if (Input.GetKeyDown(KeyCode.Space))
                 {
                     Jump();
                 }
 
-                if (SwipeManager.swipeDown && !isSliding)
+                if (Input.GetKeyDown(KeyCode.LeftShift) && !isSliding)
                 {
                     StartCoroutine(Slide());
                 }
@@ -93,7 +93,7 @@ public class PlayerController : MonoBehaviour
             else
             {
                 velocity.y += gravity * Time.deltaTime;
-                if (SwipeManager.swipeDown && !isSliding)
+                if (Input.GetKeyDown(KeyCode.LeftShift) && !isSliding)
                 {
                     StartCoroutine(Slide());
                     velocity.y = -10;

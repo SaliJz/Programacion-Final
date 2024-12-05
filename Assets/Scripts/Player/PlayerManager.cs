@@ -5,19 +5,19 @@ using TMPro;
 public class PlayerManager : MonoBehaviour
 {
     public static bool gameOver;
-    public GameObject gameOverPanel;
+    [SerializeField] private GameObject gameOverPanel;
 
     public static bool isGameStarted;
-    public GameObject startingText;
-    public GameObject newRecordPanel;
+    [SerializeField] private GameObject startingText;
+    [SerializeField] private GameObject newRecordPanel;
 
     public static int score;
-    public Text scoreText;
-    public TextMeshProUGUI gemsText;
-    public TextMeshProUGUI newRecordText;
+    [SerializeField] private TextMeshProUGUI scoreText;
+    [SerializeField] private TextMeshProUGUI gemsText;
+    [SerializeField] private TextMeshProUGUI newRecordText;
 
     public static bool isGamePaused;
-    public GameObject[] characterPrefabs;
+    [SerializeField] private GameObject[] characterPrefabs;
 
     private AdManager adManager;
 
@@ -42,11 +42,11 @@ public class PlayerManager : MonoBehaviour
 
     void Update()
     {
-        //Update UI
+        //Actualiza el HUD
         gemsText.text = PlayerPrefs.GetInt("TotalGems", 0).ToString();
         scoreText.text = score.ToString();
 
-        //Game Over
+        //Pantalla de derrota
         if (gameOver)
         {
             Time.timeScale = 0;
@@ -75,8 +75,8 @@ public class PlayerManager : MonoBehaviour
             Destroy(gameObject);
         }
 
-        //Start Game
-        if (SwipeManager.tap  && !isGameStarted)
+        //Iniciar juego
+        if (Input.GetKeyDown(KeyCode.Mouse0)  && !isGameStarted)
         {
             isGameStarted = true;
             Destroy(startingText);
