@@ -1725,6 +1725,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 919075200}
   m_CullTransparentMesh: 1
+--- !u!1 &966163869
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 966163871}
+  - component: {fileID: 966163870}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &966163870
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 966163869}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb4f1a007376e704a871c09962579a5e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneName: GameOverScene
+--- !u!4 &966163871
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 966163869}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1431.5, y: 1080, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &979709156
 GameObject:
   m_ObjectHideFlags: 0
@@ -2219,7 +2264,7 @@ MonoBehaviour:
   jumpHeight: 2
   animator: {fileID: 97997599}
   slideDuration: 1.5
-  gameOverScene: GameOver
+  gameOverScene: GameOverScene
 --- !u!1 &1190440754
 GameObject:
   m_ObjectHideFlags: 0
@@ -2510,7 +2555,6 @@ MonoBehaviour:
   - {fileID: 3523185869120563317, guid: 5a003f9f8c109af4b87a83c7c03e7cba, type: 3}
   - {fileID: 3066071429413125671, guid: d76e1e467842ac64aa18a800bf45b927, type: 3}
   - {fileID: 7519530080812410224, guid: 21e0dec5f62b52343904f93473bdee44, type: 3}
-  - {fileID: 3766955008889688403, guid: 61d3cbef52a3c234db67b7fca098b4f8, type: 3}
   tileLength: 30
   numberOfTiles: 6
 --- !u!4 &1523748446
@@ -2991,3 +3035,4 @@ SceneRoots:
   - {fileID: 1966865566}
   - {fileID: 1125524145}
   - {fileID: 1523748446}
+  - {fileID: 966163871}
