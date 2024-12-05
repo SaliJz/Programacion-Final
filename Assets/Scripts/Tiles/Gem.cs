@@ -2,22 +2,23 @@
 
 public class Gem : MonoBehaviour
 {
+    private PlayerManager playerManager;
+
     private void OnTriggerEnter(Collider other)
     {
-        if(other.tag == "Player")
+        if (other.gameObject.CompareTag("Player"))
         {
+            // Activar efecto visual desde el pool
             GameObject effect = ObjectPool.instance.GetPooledObject();
-
-            if(effect!= null)
+            if (effect != null)
             {
                 effect.transform.position = transform.position;
-                effect.transform.rotation = effect.transform.rotation;
+                effect.transform.rotation = Quaternion.identity; // Rotación estándar
                 effect.SetActive(true);
             }
 
-            PlayerPrefs.SetInt("TotalGems", PlayerPrefs.GetInt("TotalGems", 0) + 1);
-            FindObjectOfType<AudioManager>().PlaySound("PickUp");
-            PlayerManager.score += 2;
+            // Actualizar el puntaje y recolectar la gema
+            playerManager.AddCoins(2);
             gameObject.SetActive(false);
         }
     }

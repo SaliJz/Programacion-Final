@@ -6,6 +6,15 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/EndlessLevel.unity
+    path: Assets/Scenes/MainMenu.unity
+    guid: 3616e08c9f202074b84b0c82d3d7a25c
+  - enabled: 1
+    path: Assets/Scenes/NormalLevel.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Scenes/HardLevel.unity
+    guid: 24f5a39e76a4be94dbdd76854426e26a
+  - enabled: 1
+    path: Assets/Scenes/GameOver.unity
+    guid: 6e4356c2ba0b03444b819e5d1f3253d2
   m_configObjects: {}

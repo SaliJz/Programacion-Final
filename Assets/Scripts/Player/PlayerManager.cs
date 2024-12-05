@@ -4,82 +4,67 @@ using TMPro;
 
 public class PlayerManager : MonoBehaviour
 {
-    public static bool gameOver;
-    [SerializeField] private GameObject gameOverPanel;
+    private static PlayerManager instance;
 
+    public static PlayerManager Instance {  get { return instance; } }
+
+    // Variables públicas y estáticas
     public static bool isGameStarted;
-    [SerializeField] private GameObject startingText;
-    [SerializeField] private GameObject newRecordPanel;
-
     public static int score;
+
+    // Variables privadas serializadas
+    [Header("UI References")]
+    [SerializeField] private TextMeshProUGUI coinText;
     [SerializeField] private TextMeshProUGUI scoreText;
-    [SerializeField] private TextMeshProUGUI gemsText;
-    [SerializeField] private TextMeshProUGUI newRecordText;
+    [SerializeField] private GameObject startingText;
 
-    public static bool isGamePaused;
-    [SerializeField] private GameObject[] characterPrefabs;
+    // Variables privadas
+    private int coinsCollected;
+    private float startTime;
 
-    private AdManager adManager;
-
-    private void Awake()
+    private void Start()
     {
-        int index = PlayerPrefs.GetInt("SelectedCharacter");
-        GameObject go = Instantiate(characterPrefabs[index], transform.position, Quaternion.identity);
-        adManager = FindObjectOfType<AdManager>();
-    }
-
-    void Start()
-    {
+        instance = this;
+        // Inicializar variables
+        coinsCollected = 0;
         score = 0;
+        isGameStarted = false;
+
         Time.timeScale = 1;
-        gameOver = isGameStarted = isGamePaused= false;
-        /*
-        adManager.RequestBanner();
-        adManager.RequestInterstitial();
-        adManager.RequestRewardBasedVideo();
-        */
     }
 
-    void Update()
+    private void Update()
     {
-        //Actualiza el HUD
-        gemsText.text = PlayerPrefs.GetInt("TotalGems", 0).ToString();
-        scoreText.text = score.ToString();
-
-        //Pantalla de derrota
-        if (gameOver)
-        {
-            Time.timeScale = 0;
-            if (score > PlayerPrefs.GetInt("HighScore", 0))
-            {
-                newRecordPanel.SetActive(true);
-                newRecordText.text = "New \nRecord\n" + score;
-                PlayerPrefs.SetInt("HighScore", score);
-            }
-            else
-            {
-                /*
-                int i = Random.Range(0, 6);
-                if (i == 0)
-                {
-                    adManager.ShowInterstitial();
-                }
-                else if (i == 3)
-                {
-                    adManager.ShowRewardBasedVideo();
-                }
-                */
-            }
-            
-            gameOverPanel.SetActive(true);
-            Destroy(gameObject);
-        }
-
-        //Iniciar juego
-        if (Input.GetKeyDown(KeyCode.Mouse0)  && !isGameStarted)
+        // Iniciar el juego con clic
+        if (Input.GetKeyDown(KeyCode.Mouse0) && !isGameStarted)
         {
             isGameStarted = true;
+            startTime = Time.time; // Guardar el tiempo de inicio
             Destroy(startingText);
         }
+
+        // Calcular y actualizar puntaje si el juego está en marcha
+        if (isGameStarted)
+        {
+            UpdateScore();
+        }
+    }
+
+    private void UpdateScore()
+    {
+        // Calcular puntaje como suma de monedas recolectadas y tiempo jugado
+        float timePlayed = Time.time - startTime;
+        score = coinsCollected + Mathf.FloorToInt(timePlayed);
+        scoreText.text = $"Score: {score.ToString()}";
+
+        // Actualizar el texto de puntaje
+        coinText.text = $"Coins: {coinsCollected.ToString()}";
+    }
+
+    // Método para agregar monedas al puntaje
+    public void AddCoins(int amount)
+    {
+        coinsCollected += amount;
+        UpdateScore();
     }
 }

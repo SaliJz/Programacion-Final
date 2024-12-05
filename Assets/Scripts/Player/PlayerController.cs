@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -12,8 +13,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float laneDistance = 2.5f; //La distancia entre carriles de remolque
 
     [SerializeField] private bool isGrounded;
-    [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private Transform groundCheck;
 
     [SerializeField] private float gravity = -12f;
     [SerializeField] private float jumpHeight = 2;
@@ -23,6 +22,8 @@ public class PlayerController : MonoBehaviour
     private bool isSliding = false;
 
     [SerializeField] private float slideDuration = 1.5f;
+
+    [SerializeField] private string gameOverScene;
 
     bool toggle = false;
 
@@ -34,7 +35,7 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (!PlayerManager.isGameStarted || PlayerManager.gameOver)
+        if (!PlayerManager.isGameStarted)
         {
             return;
         }
@@ -60,7 +61,7 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        if (!PlayerManager.isGameStarted || PlayerManager.gameOver)
+        if (!PlayerManager.isGameStarted)
         {
             return;
         }
@@ -68,7 +69,6 @@ public class PlayerController : MonoBehaviour
         animator.SetBool("isGameStarted", true);
         move.z = forwardSpeed;
 
-        isGrounded = Physics.CheckSphere(groundCheck.position, 0.17f, groundLayer);
         animator.SetBool("isGrounded", isGrounded);
 
         if (isGrounded && velocity.y < 0)
@@ -76,89 +76,45 @@ public class PlayerController : MonoBehaviour
             velocity.y = -1f;
         }
 
-        if (Application.isMobilePlatform)
+        if (isGrounded)
         {
-            if (isGrounded)
+            if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
             {
-                if (Input.GetKeyDown(KeyCode.Space))
-                {
-                    Jump();
-                }
-
-                if (Input.GetKeyDown(KeyCode.LeftShift) && !isSliding)
-                {
-                    StartCoroutine(Slide());
-                }
-            }
-            else
-            {
-                velocity.y += gravity * Time.deltaTime;
-                if (Input.GetKeyDown(KeyCode.LeftShift) && !isSliding)
-                {
-                    StartCoroutine(Slide());
-                    velocity.y = -10;
-                }
-
-            }
-            controller.Move(velocity * Time.deltaTime);
-
-            //Recopilar las aportaciones sobre qué carril debería seguir
-            if (SwipeManager.swipeRight)
-            {
-                desiredLane++;
-                if (desiredLane == 3)
-                {
-                    desiredLane = 2;
-                }
+                Jump();
             }
 
-            if (SwipeManager.swipeLeft)
+            if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow) && !isSliding)
             {
-                desiredLane--;
-                if (desiredLane == -1)
-                {
-                    desiredLane = 0;
-                }
+                StartCoroutine(Slide());
             }
         }
         else
         {
-            if (isGrounded)
+            velocity.y += gravity * Time.deltaTime;
+            if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow) && !isSliding)
             {
-                if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
-                    Jump();
-
-                if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow) && !isSliding)
-                    StartCoroutine(Slide());
-            }
-            else
-            {
-                velocity.y += gravity * Time.deltaTime;
-                if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow) && !isSliding)
-                {
-                    StartCoroutine(Slide());
-                    velocity.y = -10;
-                }
-
-            }
-            controller.Move(velocity * Time.deltaTime);
-
-            if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
-            {
-                desiredLane++;
-                if (desiredLane == 3)
-                {
-                    desiredLane = 2;
-                }
+                StartCoroutine(Slide());
+                velocity.y = -10;
             }
 
-            if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+        }
+        controller.Move(velocity * Time.deltaTime);
+
+        if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            desiredLane++;
+            if (desiredLane == 3)
             {
-                desiredLane--;
-                if (desiredLane == -1)
-                {
-                    desiredLane = 0;
-                }
+                desiredLane = 2;
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            desiredLane--;
+            if (desiredLane == -1)
+            {
+                desiredLane = 0;
             }
         }
 
@@ -194,23 +150,46 @@ public class PlayerController : MonoBehaviour
     }
 
     private void Jump()
-    {   
+    {
         StopCoroutine(Slide());
         animator.SetBool("isSliding", false);
         animator.SetTrigger("jump");
         controller.center = Vector3.zero;
         controller.height = 2;
         isSliding = false;
-   
-        velocity.y = Mathf.Sqrt(jumpHeight * 2 * -gravity);
+        velocity.y = Mathf.Sqrt(jumpHeight * 2 * -gravity); // Ajuste de la fórmula de salto
     }
 
     private void OnControllerColliderHit(ControllerColliderHit hit)
     {
-        if(hit.transform.tag == "Obstacle")
+        if (hit.transform.CompareTag("Obstacle"))
         {
-            PlayerManager.gameOver = true;
-            FindObjectOfType<AudioManager>().PlaySound("GameOver");
+            SceneManager.LoadScene(gameOverScene);
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Coin"))
+        {
+            PlayerManager.Instance.AddCoins(2);
+            Destroy(other.gameObject);
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = true;
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = false;
         }
     }
 
@@ -218,11 +197,11 @@ public class PlayerController : MonoBehaviour
     {
         isSliding = true;
         animator.SetBool("isSliding", true);
-        yield return new WaitForSeconds(0.25f/ Time.timeScale);
+        yield return new WaitForSeconds(0.25f / Time.timeScale);
         controller.center = new Vector3(0, -0.5f, 0);
         controller.height = 1;
 
-        yield return new WaitForSeconds((slideDuration - 0.25f)/Time.timeScale);
+        yield return new WaitForSeconds((slideDuration - 0.25f) / Time.timeScale);
 
         animator.SetBool("isSliding", false);
 

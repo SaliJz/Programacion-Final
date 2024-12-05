@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
@@ -11,81 +12,72 @@ public class MainMenuController : MonoBehaviour
 {
     [Header("Paneles")]
     [SerializeField] private GameObject menuPanel;
-    [SerializeField] private GameObject optionsPanel;
+    [SerializeField] private GameObject levelPanel;
 
     [Header("Botones")]
-    [SerializeField] private Button playButton;
-    [SerializeField] private string playName;
-    [SerializeField] private Button creditsButton;
-    [SerializeField] private string creditsName;
-    [SerializeField] private Button OptionsButton;
+    [SerializeField] private TMP_InputField usernameInputField;
+
+    [SerializeField] private Button startButton;
+
+    [SerializeField] private Button normalLevelButton;
+    [SerializeField] private string normalName;
+
+    [SerializeField] private Button hardLevelButton;
+    [SerializeField] private string hardName;
+
     [SerializeField] private Button backButton;
     [SerializeField] private Button quitButton;
 
     [Header("Fuente")]
-    [SerializeField] private AudioMixer mixer;
     [SerializeField] private AudioSource fxSource;
 
     [Header("Sonido")]
     [SerializeField] private AudioClip clickSound;
 
-    [Header("Volumen")]
-    [SerializeField] private Slider volumenMaster;
-    [SerializeField] private Slider volumenFX;
-
     private void Awake()
     {
-        volumenMaster.onValueChanged.AddListener(ChangeVolumenMaster);
-        volumenFX.onValueChanged.AddListener(ChangeVolumenFX);
-
         menuPanel.SetActive(true);
-        optionsPanel.SetActive(false);
-        playButton.onClick.AddListener(PlayGame);
-        OptionsButton.onClick.AddListener(Options);
+        levelPanel.SetActive(false);
+        startButton.onClick.AddListener(StartGame);
+
+        normalLevelButton.onClick.AddListener(ChargeNormalLevel);
+        hardLevelButton.onClick.AddListener(ChargeHardLevel);
+
         backButton.onClick.AddListener(BackButton);
-        creditsButton.onClick.AddListener(Credits);
         quitButton.onClick.AddListener(QuitGame);
     }
-    private void PlayGame()
-    {
-        PlaySoundButton();
-        SceneManager.LoadScene(playName);
-    }
-
-    private void Options()
+    private void StartGame()
     {
         PlaySoundButton();
         menuPanel.SetActive(false);
-        optionsPanel.SetActive(true);
+        levelPanel.SetActive(true);
+    }
+
+    private void ChargeNormalLevel()
+    {
+        PlaySoundButton();
+        GameDataUsers.username = usernameInputField.text;
+        SceneManager.LoadScene(normalName);
+    }
+
+    private void ChargeHardLevel()
+    {
+        PlaySoundButton();
+        GameDataUsers.username = usernameInputField.text;
+        SceneManager.LoadScene(hardName);
     }
 
     private void BackButton()
     {
         PlaySoundButton();
         menuPanel.SetActive(true);
-        optionsPanel.SetActive(false);
-    }
-
-    private void Credits()
-    {
-        PlaySoundButton();
-        SceneManager.LoadScene(creditsName);
+        levelPanel.SetActive(false);
     }
 
     private void QuitGame()
     {
         PlaySoundButton();
         Application.Quit();
-    }
-
-    private void ChangeVolumenMaster(float v)
-    {
-        mixer.SetFloat("VolMaster", v);
-    }
-
-    private void ChangeVolumenFX(float v)
-    {
-        mixer.SetFloat("VolFX", v);
     }
 
     private void PlaySoundButton()
